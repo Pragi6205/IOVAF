@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
+import "hardhat/console.sol";
+
 import "./VehicleRegistry.sol";
 
 contract AlertSystem {
@@ -29,6 +31,8 @@ contract AlertSystem {
         );
 
         alerts.push(Alert(_message, msg.sender, block.timestamp));
+
+        console.log("Alert Added to the list of Alerts");
 
         emit AlertSent(_message, msg.sender);
     }
