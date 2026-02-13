@@ -26,7 +26,7 @@ import signal
 import socket
 
 SCRIPT_DIR = Path(__file__).parent.resolve()
-EDGE_SERVER_DIR = SCRIPT_DIR
+EDGE_SERVER_DIR = SCRIPT_DIR / '..'
 PIDS_DIR = EDGE_SERVER_DIR / 'pids'
 LOGS_OUT_DIR = EDGE_SERVER_DIR / 'logs'
 

@@ -1,17 +1,19 @@
 {
-  "timestamp": "2026-02-13 09:56:48",
+  "timestamp": "2026-02-13 11:03:37",
   "instances": [
     {
       "id": 1,
       "port": 3000,
-      "pid": 214244,
-      "txHash": null
+      "pid": 268640,
+      "txHash": null,
+      "url": "http://localhost:3000"
     },
     {
       "id": 2,
       "port": 3001,
-      "pid": 214269,
-      "txHash": null
+      "pid": 268658,
+      "txHash": null,
+      "url": "http://localhost:3001"
     }
   ]
 }

@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-02-13 10:57:59",
+  "instances": [
+    {
+      "id": 1,
+      "port": 5000,
+      "pid": 262272,
+      "txHash": null,
+      "url": "http://localhost:5000"
+    },
+    {
+      "id": 2,
+      "port": 5001,
+      "pid": 262290,
+      "txHash": null,
+      "url": "http://localhost:5001"
+    }
+  ]
+}
