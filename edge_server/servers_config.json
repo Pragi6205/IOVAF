@@ -1,0 +1,19 @@
+{
+  "contractAddresses": {
+    "vehicleRegistry": "0x5FbDB2315678afccb333f8a9c36758534Cc6EBBf6",
+    "alertSystem": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+    "edgeServerRegistry": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+  },
+  "instances": [
+    {
+      "id": 1,
+      "port": 3000,
+      "privateKey": "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"
+    },
+    {
+      "id": 2,
+      "port": 3001,
+      "privateKey": "0x8b3a350cf5c34c9194ca3f2a6f9b709d2d1e4f2c4e5a6b7c8d9e0f1a2b3c4d5e"
+    }
+  ]
+}

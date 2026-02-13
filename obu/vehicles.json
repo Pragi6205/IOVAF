@@ -1,0 +1,12 @@
+[
+  {
+    "vehiclePrivateKey": "0x70399f2e927c4ca3eb9c1d94721e0a5982cbe9dab1c7f9bc9405ced5c1cc6742",
+    "vehicleId": "veh_1",
+    "vehicleCategory": 0
+  },
+  {
+    "vehiclePrivateKey": "0x7793eb38cabf36cdf14bbb763e776da918a7d3a91e0a76aaf1d2400e9461a73a",
+    "vehicleId": "veh_2",
+    "vehicleCategory": 1
+  }
+]

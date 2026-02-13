@@ -1,2 +1,9 @@
 # Directories
 node_modules/
+logs/
+
+archive*
+
+*log
+
+.env

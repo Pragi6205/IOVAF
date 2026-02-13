@@ -1,0 +1,51 @@
+/**
+ * Constants
+ * Defines enums and constants for the application
+ */
+
+const VEHICLE_CATEGORY = {
+  NORMAL_VEHICLE: 0,
+  EMERGENCY_VEHICLE: 1
+};
+
+const VEHICLE_CATEGORY_NAMES = {
+  0: 'NORMAL_VEHICLE',
+  1: 'EMERGENCY_VEHICLE'
+};
+
+const ALERT_TYPE = {
+  ACCIDENT: 0,
+  HAZARD: 1,
+  CONGESTION: 2,
+  EMERGENCY: 3
+};
+
+const ALERT_TYPE_NAMES = {
+  0: 'ACCIDENT',
+  1: 'HAZARD',
+  2: 'CONGESTION',
+  3: 'EMERGENCY'
+};
+
+const ALERT_PRIORITY = {
+  LOW: 0,
+  MEDIUM: 1,
+  HIGH: 2,
+  CRITICAL: 3
+};
+
+const ALERT_PRIORITY_NAMES = {
+  0: 'LOW',
+  1: 'MEDIUM',
+  2: 'HIGH',
+  3: 'CRITICAL'
+};
+
+module.exports = {
+  VEHICLE_CATEGORY,
+  VEHICLE_CATEGORY_NAMES,
+  ALERT_TYPE,
+  ALERT_TYPE_NAMES,
+  ALERT_PRIORITY,
+  ALERT_PRIORITY_NAMES
+};
