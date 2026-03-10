@@ -70,3 +70,21 @@ class VehicleOBU:
         }
         return http_post(server, '/api/alert/process-sensor-data', payload,
                          retries=config.HTTP_RETRIES, backoff=config.HTTP_BACKOFF)
+
+    def get_all_alerts(self) -> Dict[str, Any]:
+        """Get all alerts from blockchain"""
+        server = self._choose_server()
+        return http_get(server, '/api/alert/all',
+                        retries=config.HTTP_RETRIES, backoff=config.HTTP_BACKOFF)
+
+    def get_alerts_by_type(self, alert_type: int) -> Dict[str, Any]:
+        """Get alerts by type (0=ACCIDENT, 1=HAZARD, 2=CONGESTION, 3=EMERGENCY)"""
+        server = self._choose_server()
+        return http_get(server, f'/api/alert/by-type/{int(alert_type)}',
+                        retries=config.HTTP_RETRIES, backoff=config.HTTP_BACKOFF)
+
+    def get_emergency_alerts(self) -> Dict[str, Any]:
+        """Get all emergency broadcasts"""
+        server = self._choose_server()
+        return http_get(server, '/api/alert/emergency',
+                        retries=config.HTTP_RETRIES, backoff=config.HTTP_BACKOFF)

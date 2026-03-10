@@ -10,8 +10,8 @@ if EDGE_SERVERS_RAW:
         EDGE_SERVERS = [s.strip() for s in EDGE_SERVERS_RAW.split(',') if s.strip()]
 else:
     EDGE_SERVERS = [
-        'http://localhost:3000',
-        'http://localhost:3001'
+        'http://localhost:5001',
+        'http://localhost:5002'
     ]
 
 # Default path to vehicles JSON (used by manager script)
