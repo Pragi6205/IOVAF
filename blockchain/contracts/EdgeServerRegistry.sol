@@ -50,8 +50,9 @@ contract EdgeServerRegistry {
         _;
     }
 
-    constructor() {
-        admin = msg.sender;
+    constructor(address _admin) {
+        require(_admin != address(0), "Invalid admin address");
+        admin = _admin;
     }
 
     /**

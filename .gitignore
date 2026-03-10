@@ -1,0 +1,4 @@
+*.pid
+*pid*
+
+__pycache__/

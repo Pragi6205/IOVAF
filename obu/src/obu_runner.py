@@ -7,6 +7,8 @@ import argparse
 import time
 import random
 import logging
+import os
+import json
 from obu_client import VehicleOBU
 
 logging.basicConfig(level=logging.INFO)
@@ -22,6 +24,24 @@ def random_sensor_data():
     }
 
 
+def load_contract_addresses():
+    """Load contract addresses from deployment_info.json if available"""
+    try:
+        # Try to load from edge_server deployment info
+        info_path = os.path.join(os.path.dirname(__file__), '../../edge_server/deployment_info.json')
+        if os.path.exists(info_path):
+            with open(info_path, 'r') as f:
+                data = json.load(f)
+                return {
+                    'registryAddress': data.get('vehicleRegistryAddress'),
+                    'alertSystemAddress': data.get('alertSystemAddress'),
+                    'edgeServerRegistryAddress': data.get('edgeServerRegistryAddress')
+                }
+    except Exception as e:
+        log.warning(f"Could not load contract addresses: {e}")
+    return None
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--private-key', required=True)
@@ -34,6 +54,18 @@ def main():
 
     edge_servers = [args.edge_server] if args.edge_server else None
     obu = VehicleOBU(args.private_key, args.vehicle_id, args.category, edge_servers=edge_servers)
+
+    # Try to initialize edge server with contract addresses if not already done
+    if edge_servers or not args.edge_server:
+        contract_addrs = load_contract_addresses()
+        if contract_addrs and all(contract_addrs.values()):
+            server = obu._choose_server()
+            try:
+                res = obu.initialize_server(server, contract_addrs)
+                if res and res.get('message') != 'Edge server initialized successfully':
+                    log.warning(f'Server initialization might not be needed: {res}')
+            except Exception as e:
+                log.debug(f'Could not initialize server (may already be initialized): {e}')
 
     if args.register:
         res = obu.register()

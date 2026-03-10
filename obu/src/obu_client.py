@@ -17,6 +17,13 @@ class VehicleOBU:
     def _choose_server(self) -> str:
         return pick_edge_server(self.edge_servers)
 
+    def initialize_server(self, server: str, contract_addresses: Dict[str, str]) -> Dict[str, Any]:
+        """Initialize edge server with contract addresses"""
+        payload = contract_addresses
+        log.info('Initializing edge server %s with contract addresses', server)
+        return http_post(server, '/api/initialize', payload,
+                         retries=1, backoff=config.HTTP_BACKOFF)
+
     def register(self) -> Dict[str, Any]:
         server = self._choose_server()
         payload = {

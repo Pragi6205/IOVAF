@@ -37,28 +37,29 @@ contract VehicleRegistry {
         admin = msg.sender;
     }
 
-    function registerVehicle(string memory _vehicleId, VehicleCategory _category) public {
+    function registerVehicle(string memory _vehicleId, uint8 _category) public {
         require(!vehicles[msg.sender].registered, "Vehicle already registered");
         require(bytes(_vehicleId).length > 0, "Vehicle ID cannot be empty");
+        require(_category < 2, "Invalid vehicle category");
 
         vehicles[msg.sender] = Vehicle(
             _vehicleId,
-            _category,
+            VehicleCategory(_category),
             true,
             block.timestamp,
             100  // Start with full trust
         );
 
-        emit VehicleRegistered(msg.sender, _vehicleId, _category);
+        emit VehicleRegistered(msg.sender, _vehicleId, VehicleCategory(_category));
     }
 
     function isRegistered(address _vehicle) public view returns (bool) {
         return vehicles[_vehicle].registered;
     }
 
-    function getVehicleCategory(address _vehicle) public view returns (VehicleCategory) {
+    function getVehicleCategory(address _vehicle) public view returns (uint8) {
         require(vehicles[_vehicle].registered, "Vehicle not registered");
-        return vehicles[_vehicle].category;
+        return uint8(vehicles[_vehicle].category);
     }
 
     function isEmergencyVehicle(address _vehicle) public view returns (bool) {
@@ -79,10 +80,11 @@ contract VehicleRegistry {
         emit TrustScoreUpdated(_vehicle, _newScore);
     }
 
-    function updateVehicleCategory(address _vehicle, VehicleCategory _newCategory) public onlyAdmin {
+    function updateVehicleCategory(address _vehicle, uint8 _newCategory) public onlyAdmin {
         require(vehicles[_vehicle].registered, "Vehicle not registered");
+        require(_newCategory < 2, "Invalid vehicle category");
         
-        vehicles[_vehicle].category = _newCategory;
-        emit VehicleUpdated(_vehicle, _newCategory);
+        vehicles[_vehicle].category = VehicleCategory(_newCategory);
+        emit VehicleUpdated(_vehicle, vehicles[_vehicle].category);
     }
 }

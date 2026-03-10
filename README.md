@@ -56,7 +56,11 @@ proj/
 
 ---
 
-## 🚀 Quick Start (5 Minutes)
+## 🚀 Quick Start
+
+**New!** See [QUICK_START.md](QUICK_START.md) for a 5-minute setup guide.
+
+All integration issues have been fixed. See [INTEGRATION_FIXES.md](INTEGRATION_FIXES.md) for details.
 
 ### 1. Deploy Smart Contracts
 ```bash

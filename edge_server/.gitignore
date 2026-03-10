@@ -2,6 +2,8 @@
 node_modules/
 logs/
 
+deployment_info.json
+
 archive*
 
 *log

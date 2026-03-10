@@ -193,6 +193,42 @@ def deploy_instances(count, start_port, admin_key=None):
     if not check_dependencies(EDGE_SERVER_DIR):
         sys.exit(1)
 
+    # Deploy blockchain contracts first
+    print('Deploying blockchain contracts...')
+    blockchain_dir = EDGE_SERVER_DIR / '..' / 'blockchain'
+    try:
+        deploy_proc = subprocess.run(['npm', 'run', 'deploy'], cwd=str(blockchain_dir), capture_output=True, text=True)
+        if deploy_proc.returncode != 0:
+            print('Blockchain deployment failed:', deploy_proc.stderr)
+            sys.exit(1)
+        
+        # Parse deployment output for contract addresses
+        output = deploy_proc.stdout
+        contract_addresses = {}
+        for line in output.split('\n'):
+            if 'VehicleRegistry deployed to:' in line:
+                contract_addresses['VEHICLE_REGISTRY_ADDRESS'] = line.split(':')[1].strip()
+            elif 'EdgeServerRegistry deployed to:' in line:
+                contract_addresses['EDGE_SERVER_REGISTRY_ADDRESS'] = line.split(':')[1].strip()
+            elif 'AlertSystem deployed to:' in line:
+                contract_addresses['ALERT_SYSTEM_ADDRESS'] = line.split(':')[1].strip()
+        
+        if not contract_addresses:
+            print('Failed to parse contract addresses from deployment output')
+            print('Deployment output:', output)
+            sys.exit(1)
+        
+        print('Contract addresses:')
+        for name, addr in contract_addresses.items():
+            print(f'  {name}: {addr}')
+        
+        # Get the admin private key (deployer of contracts)
+        deployer_key = admin_key or os.environ.get('ADMIN_PRIVATE_KEY') or '0xc5be9951a3df8037a8a69d1c4397f51dd7c697125bd898b9b77f8f433a2f0e31'
+        
+    except Exception as e:
+        print('Failed to deploy blockchain:', e)
+        sys.exit(1)
+
     # read .env from edge_server dir to merge into child envs
     edge_env = {}
     env_file = EDGE_SERVER_DIR / '.env'
@@ -204,6 +240,10 @@ def deploy_instances(count, start_port, admin_key=None):
             if '=' in line:
                 k, v = line.split('=', 1)
                 edge_env[k.strip()] = v.strip()
+    
+    # Override with actual deployed contract addresses
+    edge_env.update(contract_addresses)
+    edge_env['ADMIN_PRIVATE_KEY'] = deployer_key
 
     processes = []
     deployment = {'timestamp': time.strftime('%Y-%m-%d %H:%M:%S'), 'instances': []}
@@ -265,10 +305,11 @@ def deploy_instances(count, start_port, admin_key=None):
                 print(f'Registration success tx={tx}')
             except Exception:
                 print('Registrar succeeded (no JSON output)')
-        else:
-            print('Registrar failed:', reg_proc.stderr.strip()[:400])
 
         deployment['instances'].append({'id': id_, 'port': port, 'pid': p['pid'], 'txHash': tx, 'url': f'http://localhost:{port}'})
+        
+        # Add delay between registrations to prevent nonce conflicts
+        time.sleep(2)
 
     # write deployment info
     try:

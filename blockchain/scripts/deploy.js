@@ -11,7 +11,8 @@ async function main() {
 
   // Deploy Edge Server Registry (RSUs and Edge Infrastructure)
   const EdgeServerRegistry = await hre.ethers.getContractFactory("EdgeServerRegistry");
-  const edgeServerRegistry = await EdgeServerRegistry.deploy();
+  const adminAddress = "0xA3968F1f31B2823A5d7e78262c8874ABA9da81Bc"; // Correct admin address derived from private key
+  const edgeServerRegistry = await EdgeServerRegistry.deploy(adminAddress);
   await edgeServerRegistry.waitForDeployment();
 
   console.log("EdgeServerRegistry deployed to:", await edgeServerRegistry.getAddress());

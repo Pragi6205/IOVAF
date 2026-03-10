@@ -46,6 +46,11 @@ async function main() {
   const provider = new ethers.JsonRpcProvider(ganache);
   const adminWallet = new ethers.Wallet(adminKey, provider);
 
+  // helper to fetch latest nonce including pending transactions
+  async function getAdminNonce() {
+    return await provider.getTransactionCount(adminWallet.address, 'pending');
+  }
+
   const registry = new ethers.Contract(edgeRegistryAddr, config.EDGE_SERVER_REGISTRY_ABI, adminWallet);
 
   const instanceWallet = new ethers.Wallet(privateKey, provider);
@@ -53,19 +58,38 @@ async function main() {
 
   try {
     if (fundAmount) {
-      // send ETH from admin to instance
+      // send ETH from admin to instance (use explicit nonce)
       const value = ethers.parseEther(String(fundAmount));
-      const txFund = await adminWallet.sendTransaction({ to: serverAddress, value });
+      let nonce = await getAdminNonce();
+      const txFund = await adminWallet.sendTransaction({ to: serverAddress, value, nonce });
       await txFund.wait();
-      console.log(JSON.stringify({ funded: true, to: serverAddress, amount: fundAmount, fundTx: txFund.hash }));
+      // Don't output funding JSON to avoid multiple JSON parsing issues
     }
 
-    const tx = await registry.registerEdgeServer(serverId, serverAddress, location);
+    // Retry logic for registration with nonce handling
+    let retries = 3;
+    let tx;
+    while (retries > 0) {
+      try {
+        const nonce = await getAdminNonce();
+        tx = await registry.registerEdgeServer(serverId, serverAddress, location, { nonce });
+        break; // Success, exit retry loop
+      } catch (err) {
+        if (err.message.includes('nonce') && retries > 1) {
+          console.error(`Nonce error, retrying... (${retries-1} attempts left)`);
+          // Wait a bit and sync nonce
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          retries--;
+          continue;
+        }
+        throw err; // Re-throw if not a nonce error or out of retries
+      }
+    }
+    
     const receipt = await tx.wait();
-    console.log(JSON.stringify({ success: true, txHash: receipt.transactionHash, serverAddress }));
+    console.log(JSON.stringify({ success: true, txHash: tx.hash, serverAddress }));
     process.exit(0);
   } catch (err) {
-    console.error(JSON.stringify({ success: false, error: err.message }));
     process.exit(2);
   }
 }

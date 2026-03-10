@@ -1,5 +1,6 @@
 """Streamlit UI to simulate vehicles and interact with Edge Server via OBU client."""
 import streamlit as st
+import os
 from obu_client import VehicleOBU
 import config
 
@@ -7,11 +8,17 @@ st.set_page_config(page_title='OBU Vehicle Simulator', layout='centered')
 
 st.title('OBU Vehicle Simulator')
 
+# Check if vehicle data is provided via environment variables (multi-instance mode)
+env_vehicle_id = os.environ.get('OBU_VEHICLE_ID')
+env_private_key = os.environ.get('OBU_PRIVATE_KEY')
+env_category = os.environ.get('OBU_CATEGORY')
+env_edge_server = os.environ.get('OBU_EDGE_SERVER')
+
 with st.form('vehicle_form'):
-    private_key = st.text_area('Vehicle Private Key', height=100)
-    vehicle_id = st.text_input('Vehicle ID', value='veh_'+str(st.session_state.get('next_id', 1)))
-    category = st.selectbox('Vehicle Category', options=[0, 1, 2], format_func=lambda x: {0:'NORMAL',1:'EMERGENCY',2:'RSU'}[x])
-    edge_choice = st.selectbox('Edge Server (or choose Random)', options=['RANDOM'] + config.EDGE_SERVERS)
+    private_key = st.text_area('Vehicle Private Key', value=env_private_key or '', height=100)
+    vehicle_id = st.text_input('Vehicle ID', value=env_vehicle_id or 'veh_'+str(st.session_state.get('next_id', 1)))
+    category = st.selectbox('Vehicle Category', options=[0, 1, 2], format_func=lambda x: {0:'NORMAL',1:'EMERGENCY',2:'RSU'}[x], index=int(env_category) if env_category else 0)
+    edge_choice = st.selectbox('Edge Server (or choose Random)', options=['RANDOM'] + config.EDGE_SERVERS, index=0 if not env_edge_server else (config.EDGE_SERVERS.index(env_edge_server) + 1 if env_edge_server in config.EDGE_SERVERS else 0))
     register_btn = st.form_submit_button('Register Vehicle')
 
 if register_btn:

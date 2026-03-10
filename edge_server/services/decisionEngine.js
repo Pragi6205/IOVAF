@@ -17,10 +17,15 @@ function analyzeAndDecide(sensorData) {
       collision,
       visibility,
       temperature,
+      gps,
       gpsCoords,
       weatherCondition,
       roadCondition
     } = sensorData;
+
+    // Normalize GPS coords - handle both 'gps' and 'gpsCoords' formats
+    const coords = gps || gpsCoords;
+    const gpsString = coords ? `(${coords.lat || coords.latitude}, ${coords.lng || coords.lon || coords.longitude})` : '(unknown)';
 
     // Priority 1: Critical - Immediate Danger
     if (collision === true) {
@@ -28,7 +33,7 @@ function analyzeAndDecide(sensorData) {
         shouldAlert: true,
         alertType: ALERT_TYPE.ACCIDENT,
         priority: ALERT_PRIORITY.CRITICAL,
-        message: `COLLISION DETECTED - Emergency alert at GPS: (${gpsCoords?.lat}, ${gpsCoords?.lng})`
+        message: `COLLISION DETECTED - Emergency alert at GPS: ${gpsString}`
       };
     }
 
